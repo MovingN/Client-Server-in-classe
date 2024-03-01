@@ -17,11 +17,13 @@ import java.util.logging.Logger;
 public class ClientCl {
     String host;
     int port;
+    private String colore;
     Socket clientSocket;
     Scanner scan = new Scanner(System.in);;
     public ClientCl(String host, int port) {
         this.host=host;
         this.port=port;
+        this.colore=colore;
         try {
             this.clientSocket = new Socket(host, port);
             System.out.println("Client connesso al server \n");
@@ -30,6 +32,9 @@ public class ClientCl {
         }
     }
     
+    public void connetti(){
+        
+    }
     
     public void scrivi(){
         try {
