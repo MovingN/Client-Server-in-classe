@@ -3,27 +3,38 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package client_server;
+
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 /**
  *
  * @author Studenti
  */
 public class ClientCl {
+
     String host;
     int port;
     private String colore;
     Socket clientSocket;
-    Scanner scan = new Scanner(System.in);;
+    String ricevuto;
+    String invio;
+    DataInputStream in;
+    DataOutputStream out;
+    DataOutputStream outServer;
+    BufferedReader inServer;
+    Scanner scan = new Scanner(System.in);
+
     public ClientCl(String host, int port) {
-        this.host=host;
-        this.port=port;
-        this.colore=colore;
+        this.host = host;
+        this.port = port;
+        this.colore = colore;
         try {
             this.clientSocket = new Socket(host, port);
             System.out.println("Client connesso al server \n");
@@ -31,44 +42,50 @@ public class ClientCl {
             System.err.println("errore con l'inizializzazione del socket client");
         }
     }
-    
-    public void connetti(){
-        
-    }
-    
-    public void scrivi(){
+
+    public Socket connetti() {
         try {
-            InputStream inputStream = clientSocket.getInputStream();
-            OutputStream outputStream = clientSocket.getOutputStream();
-             String messaggioInviato = scan.nextLine();
-        outputStream.write(messaggioInviato.getBytes());
-        while (true) {
-            byte[] messaggioRicevuto = new byte[1024];
-            int bytesLetti = inputStream.read(messaggioRicevuto);
-            String messaggio = new String(messaggioRicevuto, 0, bytesLetti);
-            System.out.println("Messaggio ricevuto dal server: " + messaggio + "\n");
-            messaggio="FINE";
-            messaggioInviato = "Risposta dal client: " + messaggio + "\n";
-            outputStream.write(messaggioInviato.getBytes());
+            Socket clientSocket = new Socket(host, port);
+            inServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new DataOutputStream(clientSocket.getOutputStream());
+        } catch (UnknownHostException ex) {
+            System.err.println("Host sconosciuto");
+        } catch (Exception ex) {
+            System.err.println("Errore in connetti (Client)");
+            System.exit(1);
         }
-        }catch (IOException ex) {
-           System.err.println("Errori con Input ed Output stream");
+        return clientSocket;
+    }
+
+    public void scrivi() {
+        try {
+            System.out.println("Inserisci un messaggio per il server");
+            invio = scan.nextLine();
+            System.out.println("Invio ...");
+            outServer.writeBytes(invio);
+            ricevuto = inServer.readLine();
+            System.out.println("Risposta del server=" + ricevuto);
+        } catch (IOException ex) {
+            System.err.println("Problema in scrivi(CLIENT)");
         }
-      
+
+    }
+
+    public void leggi() {
+        try {
+            ricevuto = inServer.readLine();
+            System.out.println("(CLIENT)Ho ricevuto il seguente messaggio" + ricevuto);
+        } catch (IOException ex) {
+            System.err.println("Problema in leggi(CLIENT)");
         }
-        public void leggi(){
-            
-            
-        }
-        
-        public void chiudi(){
-            System.out.println("Chiusura della connessione con il server \n");
+    }
+
+    public void chiudi() {
+        System.out.println("Chiusura della connessione con il server \n");
         try {
             clientSocket.close();
         } catch (IOException ex) {
             System.err.println("Problemi di chiusura del socket client");
         }
-        }
+    }
 }
-
-

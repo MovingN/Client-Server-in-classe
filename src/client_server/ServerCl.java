@@ -4,10 +4,14 @@
  */
 package client_server;
 
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -20,37 +24,61 @@ public class ServerCl {
     int porta;
     ServerSocket serverSocket;
     Socket clientSocket;
+    BufferedReader inClient;
+    DataOutputStream outClient;
+    String ricevuto;
+    String invia;
+    Scanner scan = new Scanner(System.in);
 
     public ServerCl(int porta) {
         this.porta = porta;
     }
 
     public Socket attendi() {
-        socket = null;
+
         try {
             serverSocket = new ServerSocket(porta);
             System.out.println("Server in ascolto");
-            socket = serverSocket.accept();
+            clientSocket = serverSocket.accept();
             System.out.println("La connessione e' avvenuta");
-
+            inClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            outClient = new DataOutputStream(clientSocket.getOutputStream());
         } catch (BindException e) {
             System.err.println("Porta gia in uso");
         } catch (IOException ex) {
             System.err.println("Problema in attendi");
         }
-        return socket;
+        return clientSocket;
     }
 
     public void scrivi() {
+        try {
+            System.out.println("Metodo scrivi");
+            invia = ricevuto + "Il server ha visionato il messaggio";
+            System.out.println("Modifica in invio");
+            outClient.writeBytes(invia);
+        } catch (IOException ex) {
+            System.err.println("Problema in scrivi");
+        }
 
     }
 
     public void leggi() {
-
+        try {
+            ricevuto = inClient.readLine();
+            System.out.println("(SERVER)Ho ricevuto il seguente messaggio" + ricevuto);
+        } catch (IOException ex) {
+            System.err.println("Problema in leggi");
+        }
     }
 
     public void chiudi() {
-
+        try {
+            inClient.close();
+            outClient.close();
+        } catch (IOException ex) {
+            System.err.println("Problema in chiudi");      
+        } 
     }
 
     public void termina() {
