@@ -17,7 +17,7 @@ import java.util.Scanner;
  *
  * @author Studenti
  */
-public class ClientCl {
+public class ClientCl extends Thread {
 
     String host;
     int port;
@@ -43,6 +43,13 @@ public class ClientCl {
         }
     }
 
+    @Override
+    public void run() {
+        scrivi();
+        leggi();
+        chiudi();
+    }
+
     public Socket connetti() {
         try {
             Socket clientSocket = new Socket(host, port);
@@ -59,10 +66,12 @@ public class ClientCl {
 
     public void scrivi() {
         try {
+            inServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            out = new DataOutputStream(clientSocket.getOutputStream());
             System.out.println("Inserisci un messaggio per il server");
             invio = scan.nextLine();
             System.out.println("Invio ...");
-            outServer.writeBytes(invio);
+            out.writeBytes(invio);
             ricevuto = inServer.readLine();
             System.out.println("Risposta del server=" + ricevuto);
         } catch (IOException ex) {

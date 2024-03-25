@@ -12,14 +12,12 @@ import java.net.BindException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
  * @author Studenti
  */
-public class ServerCl {
+public class ServerCl{
 
     int porta;
     ServerSocket serverSocket;
@@ -37,12 +35,14 @@ public class ServerCl {
     public Socket attendi() {
 
         try {
+            while (true) {
+            inClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+            outClient = new DataOutputStream(clientSocket.getOutputStream());
             serverSocket = new ServerSocket(porta);
             System.out.println("Server in ascolto");
             clientSocket = serverSocket.accept();
             System.out.println("La connessione e' avvenuta");
-            inClient = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            outClient = new DataOutputStream(clientSocket.getOutputStream());
+            }
         } catch (BindException e) {
             System.err.println("Porta gia in uso");
         } catch (IOException ex) {

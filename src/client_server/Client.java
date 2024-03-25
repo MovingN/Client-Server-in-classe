@@ -14,9 +14,6 @@ public class Client {
 
     public static void main(String[] args) throws IOException {
         ClientCl client = new ClientCl("127.0.0.1", 1349);
-        client.scrivi();
-        client.leggi();
-        client.chiudi();
-
+        client.run();
     }
 }
